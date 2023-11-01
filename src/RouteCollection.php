@@ -8,11 +8,17 @@
 
 namespace rguezque\RouteCollection;
 
+use Closure;
+
+/**
+ * Convert a route path to right format
+ * 
+ * @param string $path The route path
+ * @return string
+ */
 function str_path(string $path): string {
     return '/'.trim($path, '/\\');
 }
-
-use Closure;
 
 /**
  * Routes collector
@@ -42,7 +48,7 @@ class RouteCollection {
      * @param string $prefix The routes prefix
      */
     public function __construct(string $prefix = '') {
-        if('' !== $prefix) {
+        if('' !== trim($prefix)) {
             $this->prefix = str_path($prefix);
         }
     }
@@ -78,7 +84,5 @@ class RouteCollection {
     }
     
 }
-
-
 
 ?>
