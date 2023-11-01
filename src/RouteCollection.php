@@ -8,6 +8,10 @@
 
 namespace rguezque\RouteCollection;
 
+function str_path(string $path): string {
+    return '/'.trim($path, '/\\');
+}
+
 use Closure;
 
 /**
@@ -39,7 +43,7 @@ class RouteCollection {
      */
     public function __construct(string $prefix = '') {
         if('' !== $prefix) {
-            $this->prefix = '/'.trim($prefix, '/\\');
+            $this->prefix = str_path($prefix);
         }
     }
 
@@ -53,7 +57,7 @@ class RouteCollection {
      */
     public function route(string $http_method, string $route_path, callable $controller): void {
         $http_method = strtoupper(trim($http_method));
-        $route_path = $this->prefix.'/'.trim($route_path, '/\\');
+        $route_path = $this->prefix.str_path($route_path);
         
         $route = new Route($http_method, $route_path, $controller);
         $this->routes[] = $route;
@@ -67,7 +71,7 @@ class RouteCollection {
      * @return void
      */
     public function routeGroup(string $group_prefix, Closure $closure): void{
-        $group_prefix = '/'.trim($group_prefix, '/\\');
+        $group_prefix = str_path($group_prefix);
         $route_collection = new RouteCollection($this->prefix.$group_prefix);
         call_user_func($closure, $route_collection);
         $this->routes = array_merge($this->routes, $route_collection->routes);

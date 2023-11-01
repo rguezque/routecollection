@@ -8,7 +8,6 @@
 
 namespace rguezque\RouteCollection;
 
-use Closure;
 use UnexpectedValueException;
 use RuntimeException;
 
@@ -113,7 +112,7 @@ class Dispatcher {
                 break;
         
             case Dispatcher::NOT_FOUND:
-                throw new RuntimeException('The request URI do not match any route.');
+                throw new RuntimeException(sprintf('The request URI "%s" do not match any route.', $request_uri));
                 break;
         }
     }
