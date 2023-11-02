@@ -8,14 +8,10 @@
 
 namespace rguezque\RouteCollection;
 
-use UnexpectedValueException;
-use RuntimeException;
-
 /**
  * Routes dispatcher
  * 
  * @method array match(string $request_uri, string $request_method) Run the router and match the request URI with the routes
- * @method void dispatch(string $request_uri, string $request_method) Dispatch the router and route controller
  */
 class Dispatcher {
 
@@ -84,37 +80,6 @@ class Dispatcher {
             'request_method' => $request_method,
             'request_uri' => $request_uri
         ];
-    }
-
-    /**
-     * Dispatch the router and route controller
-     * 
-     * @param string $request_uri The request URI
-     * @param string $request_method The request HTTP method
-     * @throws UnexpectedValueException
-     * @throws RuntimeException
-     * @return void
-     */
-    public function dispatch(string $request_uri, string $request_method): void {
-        $router_params = $this->match($request_uri, $request_method);
-
-        switch($router_params['status_code']) {
-            case Dispatcher::FOUND: 
-                $result = call_user_func($router_params['route_controller'], $router_params['route_params']);
-                
-                if(is_null($result)) {
-                    $buffer = ob_get_clean();
-                    throw new UnexpectedValueException(sprintf('The route "%s" with %s method must return a result.', $router_params['route_path'], $router_params['route_method']));
-                }
-
-                //http_response_code(200);
-                echo $result;
-                break;
-        
-            case Dispatcher::NOT_FOUND:
-                throw new RuntimeException(sprintf('The request URI "%s" do not match any route.', $request_uri));
-                break;
-        }
     }
 
     /**
