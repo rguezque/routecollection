@@ -98,11 +98,9 @@ $router = new RouteCollection('/mi_router');
 
 ## Ejecutar el router
 
-La clase `Dispatcher` recibe como argumento un objeto `RouteCollection` al momento de crear la instancia. 
+Para ejecutar el router se debe crear una instancia de `Dispatcher` el cual recibe como argumento un objeto `RouteCollection`.
 
-Proporciona dos métodos para correr el router, `Dispatcher::match` y `Dispatcher::dispatch`; ambos reciben los mismos parámetros, `$_SERVER['REQUEST_URI']` y `$_SERVER['REQUEST_METHOD']`.
-
-`Dispatcher::match`, buscará una ruta que corresponda o se empareje con la URI solicitada. Si halla alguna coincidencia devolvera un *array* con los datos de la ruta.
+El método `Dispatcher::match` permite correr el router y recibe los parámetros `$_SERVER['REQUEST_URI']` y `$_SERVER['REQUEST_METHOD']`. Buscará una ruta que corresponda o se empareje con la URI solicitada; si halla alguna coincidencia devolvera un *array* con los datos de la ruta.
 
 - `status_code`: Con valor `1` que significa que fue hallada una coincidencia.
 - `route_path`: La definicion de la URI de la ruta.
@@ -111,8 +109,6 @@ Proporciona dos métodos para correr el router, `Dispatcher::match` y `Dispatche
 - `route_params`: Los parámetros de la ruta si es que se definieron *wildcards* en la ruta.
 
 Si  `Dispatcher::match` no encuentra ninguna ruta devolverá solamente los primeros tres elementos anteriores donde `status_code` tendrá valor `0`.
-
-El método `Dispatcher::dispatch` en cambio proporciona una implementación predeterminada del router donde automaticamente ejecutara el controlador de una ruta si es hallada. Para este caso los controladores deben *retornar* un valor de lo contrario arrojará una excepción `UnexpectedValueException`. Si una ruta no es hallada arrojará una excepción `RuntimeException`.
 
 ## Extensible
 
@@ -128,31 +124,36 @@ use rguezque\RouteCollection\RouteCollection;
 $router = new RouteCollection;
 
 // Add some routes
-$router->route('GET', '/', function() {
-    echo 'Home';
+$router->route('GET', '/', function(): string {
+    return 'Home';
 });
 
-$router->route('GET', '/posts/{id}', function(Request $request, Response $response) {
-    $params = $request->getParams();
-    echo 'ID received: '.$params['id'];
+$router->route('GET', '/posts/{id}', function(array $params): string {
+    return 'ID received: '.$params['id'];
 }); 
 
 $dispatcher = new Dispatcher($router);
 
-$result = $dispatcher->match($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
+// Dispatch the router for the current request
+$router_params = $dispatcher->match($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
 
-switch($result['status_code']) {
-    case Dispatcher::FOUND:
-        $request = new Request();
-        $request->setParams($result['route_params']);
-        call_user_func_array($result['route_controller'], $request, new Response);
-        break;
+switch($router_params['status_code']) {
+    case Dispatcher::FOUND: 
+        $result = call_user_func($router_params['route_controller'], $router_params['route_params']);
         
+        if(is_null($result)) {
+            ob_get_clean();
+            http_response_code(406);
+            printf('The route "%s" with %s method must return a result.', $router_params['route_path'], $router_params['route_method']);
+        }
+
+        http_response_code(200);
+        echo $result;
+        break;
+
     case Dispatcher::NOT_FOUND:
         http_response_code(404);
-        echo 'Not found';
+        printf('The request URI "%s" with %s method do not match any route.', $router_params['request_uri'], $router_params['request_method']);
         break;
 }
 ```
-
-El ejemplo anterior da por hecho que existen las clases `Request` y `Response`.
