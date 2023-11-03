@@ -39,8 +39,10 @@ $router->routeGroup('/foo', function(RouteCollection $route) {
 
 $dispatcher = new Dispatcher($router);
 
-// Despacha el controlador para la actual petición
-$dispatcher->dispatch($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
+// Despacha el router para la actual petición
+$router_params = $dispatcher->match($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
+
+// Implementar acciones con el resultado...
 ```
 
 ## Agregar rutas
@@ -108,7 +110,11 @@ El método `Dispatcher::match` permite correr el router y recibe los parámetros
 - `route_controller`: El controlador de la ruta.
 - `route_params`: Los parámetros de la ruta si es que se definieron *wildcards* en la ruta.
 
-Si  `Dispatcher::match` no encuentra ninguna ruta devolverá solamente los primeros tres elementos anteriores donde `status_code` tendrá valor `0`.
+Si  `Dispatcher::match` no encuentra ninguna ruta devolverá lo siguiente:
+
+- `status_code`: Con valor `0` que significa que la ruta solicitada no fue hallada.
+- `request_uri`: La URI solicitada.
+- `request_method`: El método de petición de la URI solicitada.
 
 ## Extensible
 
