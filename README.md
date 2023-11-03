@@ -1,6 +1,6 @@
 # RouteCollection
 
-**RouteCollection** es un router extensible que permite agregar rutas y grupos de rutas de manera recursiva.
+**RouteCollection** es un router extensible que permite agregar rutas y grupos de rutas. No ejecuta acciones sobre los controladores, solamente devuelve parámetros de la ruta solicitada si es hallada, para implementar acciones posteriores.
 
 ```php
 use rguezque\RouteCollection\Dispatcher;
@@ -53,7 +53,7 @@ Los *wildcards* que coincidan con la URI solicitada serán enviados al controlad
 
 Agrega grupos de rutas bajo un mismo prefijo de ruta con el método `RouteCollection::routeGroup`. Esté método recibe dos parámetros, el prefijo del grupo y una función que a su vez recibe un argumento de tipo `RouteCollection`.
 
-Dentro de esta función se pueden definir no solo rutas sino grupos de rutas que a su vez heredarán el prefijo del grupo padre.
+Dentro de esta función se pueden definir no solo rutas sino grupos de rutas anidadas que a su vez heredarán el prefijo del grupo padre.
 
 ```php
 $router->routeGroup('/foo', function(RouteCollection $route) {
