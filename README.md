@@ -1,6 +1,6 @@
 # RouteCollection
 
-**RouteCollection** es un router extensible que permite agregar rutas y grupos de rutas. No ejecuta acciones sobre los controladores, solamente devuelve parámetros de la ruta solicitada si es hallada, para implementar acciones posteriores.
+**RouteCollection** es un router extensible permite agregar rutas y grupos de rutas. No ejecuta acciones sobre los controladores, solamente devuelve parámetros de la ruta solicitada si es hallada, para implementar acciones posteriores.
 
 ```php
 use rguezque\RouteCollection\Dispatcher;
