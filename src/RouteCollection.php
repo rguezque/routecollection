@@ -17,7 +17,7 @@ use Closure;
  * @return string
  */
 function str_path(string $path): string {
-    return '/'.trim($path, '/\\');
+    return '/'.trim(trim($path), '/\\');
 }
 
 /**
