@@ -118,7 +118,7 @@ Si  `Dispatcher::match` no encuentra ninguna ruta devolverá lo siguiente:
 
 ## Extensible
 
-La versatilidad de `Dispatcher::match` es que permite decidir como implementar las acciones del controlador después de ejecutar el enrutamiento. Por ejemplo de la siguiente manera:
+El método `Dispatcher::match` que permite decidir como implementar las acciones del controlador después de ejecutar el enrutamiento. Por ejemplo de la siguiente manera:
 
 ```php
 require __DIR__.'/vendor/autoload.php';
@@ -146,11 +146,12 @@ $router_params = $dispatcher->match($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_M
 switch($router_params['status_code']) {
     case Dispatcher::FOUND: 
         $result = call_user_func($router_params['route_controller'], $router_params['route_params']);
+        ob_get_clean();
         
         if(is_null($result)) {
-            ob_get_clean();
             http_response_code(406);
             printf('The route "%s" with %s method must return a result.', $router_params['route_path'], $router_params['route_method']);
+            break;
         }
 
         http_response_code(200);

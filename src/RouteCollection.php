@@ -11,16 +11,6 @@ namespace rguezque\RouteCollection;
 use Closure;
 
 /**
- * Convert a route path to right format
- * 
- * @param string $path The route path
- * @return string
- */
-function str_path(string $path): string {
-    return '/'.trim(trim($path), '/\\');
-}
-
-/**
  * Routes collector
  * 
  * @method void route(string $http_method, string $route_path, callable $controller) Add a route to the collection
@@ -40,7 +30,7 @@ class RouteCollection {
      * 
      * @var Route[]
      */
-    public $routes = [];
+    private $routes = [];
 
     /**
      * Initialize the routes collection
@@ -49,7 +39,7 @@ class RouteCollection {
      */
     public function __construct(string $prefix = '') {
         if('' !== trim($prefix)) {
-            $this->prefix = str_path($prefix);
+            $this->prefix = self::strPathFormat($prefix);
         }
     }
 
@@ -63,7 +53,7 @@ class RouteCollection {
      */
     public function route(string $http_method, string $route_path, callable $controller): void {
         $http_method = strtoupper(trim($http_method));
-        $route_path = $this->prefix.str_path($route_path);
+        $route_path = $this->prefix.self::strPathFormat($route_path);
         
         $route = new Route($http_method, $route_path, $controller);
         $this->routes[] = $route;
@@ -77,10 +67,29 @@ class RouteCollection {
      * @return void
      */
     public function routeGroup(string $group_prefix, Closure $closure): void{
-        $group_prefix = str_path($group_prefix);
+        $group_prefix = self::strPathFormat($group_prefix);
         $route_collection = new RouteCollection($this->prefix.$group_prefix);
         call_user_func($closure, $route_collection);
-        $this->routes = array_merge($this->routes, $route_collection->routes);
+        $this->routes = array_merge($this->routes, $route_collection->getRoutes());
+    }
+
+    /**
+     * Return all the registered routes from this instance
+     * 
+     * @return array
+     */
+    public function getRoutes(): array {
+        return $this->routes;
+    }
+
+    /**
+     * Convert a route path to right format
+     * 
+     * @param string $path The route path
+     * @return string
+     */
+    public static function strPathFormat(string $path): string {
+        return '/'.trim(trim($path), '/\\');
     }
     
 }

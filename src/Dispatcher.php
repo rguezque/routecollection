@@ -42,7 +42,7 @@ class Dispatcher {
      * @param Routecollection $route_collection The routes collection
      */
     public function __construct(RouteCollection $route_collection) {
-        $this->routes = $route_collection->routes;
+        $this->routes = $route_collection->getRoutes();
     }
 
     /**

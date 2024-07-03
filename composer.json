@@ -3,6 +3,7 @@
     "description": "A basic and extensible PHP router.",
     "type": "router",
     "license": "MIT",
+    "homepage": "https://github.com/rguezque/routecollection",
     "autoload": {
         "psr-4": {
             "rguezque\\RouteCollection\\": "src/"
