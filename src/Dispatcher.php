@@ -11,7 +11,7 @@ namespace rguezque\RouteCollection;
 /**
  * Routes dispatcher
  * 
- * @method array match(string $request_uri, string $request_method) Run the router and match the request URI with the routes
+ * @method array match(string $request_uri, string $request_method) Run the router and handle the request URI and request http method
  */
 class Dispatcher {
 
@@ -46,7 +46,8 @@ class Dispatcher {
     }
 
     /**
-     * Run the router and match the request URI with the routes
+     * Handle the request URi and HTTP request method, comparing them with each defined route until the first match is found. 
+     * Then dispatch the route controller and route params; additionally data such as status code of routing, route URI and route HTTP method.
      * 
      * @param string $request_uri The request URI
      * @param string $request_method The request HTTP method
@@ -60,16 +61,16 @@ class Dispatcher {
         }
 
         foreach ($this->routes as $route) {
-            $pattern = $this->getRegex($route->route_path);
+            $pattern = $this->getRegexPattern($route->getPath());
 
-            if ($route->http_method === $request_method && preg_match($pattern, $request_uri, $params)) {
+            if ($route->getMethod() === $request_method && preg_match($pattern, $request_uri, $params)) {
                 array_shift($params);
 
                 return [
                     'status_code' => Dispatcher::FOUND,
-                    'route_path' => $route->route_path,
-                    'route_method' => $route->http_method,
-                    'route_controller' => $route->controller,
+                    'route_path' => $route->getPath(),
+                    'route_method' => $route->getMethod(),
+                    'route_controller' => $route->getController(),
                     'route_params' => $params
                 ];
             }
@@ -88,7 +89,7 @@ class Dispatcher {
      * @param string $path The route path
      * @return string
      */
-    private function getRegex(string $path): string {
+    private function getRegexPattern(string $path): string {
         $path = str_replace('/', '\/', '/'.trim($path, '/\\'));
         $path = preg_replace('#{(\w+)}#', '(?<$1>\w+)', $path); // Replace wildcards
 

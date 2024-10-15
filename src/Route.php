@@ -17,21 +17,21 @@ class Route {
      * 
      * @var string
      */
-    public $http_method;
+    private $http_method;
 
     /**
      * The route path
      * 
      * @var string
      */
-    public $route_path;
+    private $route_path;
 
     /**
      * The route controller
      * 
      * @var callable
      */
-    public $controller;
+    private $controller;
 
     /**
      * Initialize a route
@@ -44,6 +44,18 @@ class Route {
         $this->http_method = $http_method;
         $this->route_path = $route_path;
         $this->controller = $controller;
+    }
+
+    public function getPath() {
+        return $this->route_path;
+    }
+
+    public function getMethod() {
+        return $this->http_method;
+    }
+
+    public function getController() {
+        return $this->controller;
     }
 }
 

@@ -69,7 +69,9 @@ class RouteCollection {
     public function routeGroup(string $group_prefix, Closure $closure): void{
         $group_prefix = self::strPathFormat($group_prefix);
         $route_collection = new RouteCollection($this->prefix.$group_prefix);
+        // Processes the routes in the route group to retrieve the routes registered in the $route_collection object and merge them with the other existing routes.
         call_user_func($closure, $route_collection);
+        // Retrieve the generated routes and merge
         $this->routes = array_merge($this->routes, $route_collection->getRoutes());
     }
 
@@ -89,7 +91,7 @@ class RouteCollection {
      * @return string
      */
     public static function strPathFormat(string $path): string {
-        return '/'.trim(trim($path), '/\\');
+        return '/'.trim($path, '/\\ ');
     }
     
 }

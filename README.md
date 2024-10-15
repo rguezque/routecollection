@@ -47,9 +47,9 @@ $router_params = $dispatcher->match($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_M
 
 ## Agregar rutas
 
-Agrega rutas con el método `RouteCollection::route`, el cual recibe cuatro parámetros; el método de petición HTTP, la definición de la ruta la cual soporta *wildcards* en forma de parámetros nombrados y el controlador de la ruta. 
+Agrega rutas con el método `RouteCollection::route`, el cual recibe tres parámetros; el método de petición HTTP, la definición de la ruta la cual soporta *wildcards* en forma de parámetros nombrados y el controlador de la ruta. 
 
-Los *wildcards* que coincidan con la URI solicitada serán enviados al controlador, como argumento dentro de un array lineal. El controlador puede ser una función, un método de un objeto o un métoco estático.
+Los *wildcards* que coincidan con la URI solicitada serán enviados al controlador como argumentos dentro de un array lineal. El controlador puede ser una función, un método de un objeto o un método estático.
 
 Agrega grupos de rutas bajo un mismo prefijo de ruta con el método `RouteCollection::routeGroup`. Esté método recibe dos parámetros, el prefijo del grupo y una función que a su vez recibe un argumento de tipo `RouteCollection`.
 
@@ -108,7 +108,7 @@ El método `Dispatcher::match` permite correr el router y recibe los parámetros
 - `route_path`: La definicion de la URI de la ruta.
 - `route_method`: El método HTTP de petición definido para la ruta.
 - `route_controller`: El controlador de la ruta.
-- `route_params`: Los parámetros de la ruta si es que se definieron *wildcards* en la ruta.
+- `route_params`: Un *array* asociativo con los parámetros de la ruta si es que se definieron *wildcards* en la ruta.
 
 Si  `Dispatcher::match` no encuentra ninguna ruta devolverá lo siguiente:
 
@@ -118,7 +118,7 @@ Si  `Dispatcher::match` no encuentra ninguna ruta devolverá lo siguiente:
 
 ## Extensible
 
-El método `Dispatcher::match` que permite decidir como implementar las acciones del controlador después de ejecutar el enrutamiento. Por ejemplo de la siguiente manera:
+El método `Dispatcher::match` permite decidir como implementar las acciones del controlador después de ejecutar el enrutamiento. Por ejemplo de la siguiente manera:
 
 ```php
 require __DIR__.'/vendor/autoload.php';
@@ -136,7 +136,7 @@ $router->route('GET', '/', function(): string {
 
 $router->route('GET', '/posts/{id}', function(array $params): string {
     return 'ID received: '.$params['id'];
-}); 
+}); combine
 
 $dispatcher = new Dispatcher($router);
 
