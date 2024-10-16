@@ -10,6 +10,14 @@ namespace rguezque\RouteCollection;
 
 /**
  * Represent an HTTP headers collection
+ * 
+ * @method void setHeader(string $name, $value) Add or update an HTTP header
+ * @method mixed getHeader(string $name) Retrieve an HTTP header by name
+ * @method bool hasHeader(string $name) Check if an HTTP header exists
+ * @method void removeHeader(string $name) Remove an HTTP header
+ * @method void clearAllHeaders() Remove all HTTP headers
+ * @method array getAllHeaders() Get all HTTP headers
+ * @method void sendHeaders() Send all HTTP headers
  */
 class HttpHeaders {
     /**
@@ -27,7 +35,7 @@ class HttpHeaders {
     }
 
     /**
-     * Add or update a header
+     * Add or update an HTTP header
      * 
      * @param string $name Header name
      * @param mixed $value Header value
@@ -38,17 +46,17 @@ class HttpHeaders {
     }
 
     /**
-     * Retrieve a header by name
+     * Retrieve an HTTP header by name
      * 
      * @param string $name Header name
      * @return mixed
      */
-    public function getHeader(string $name) {
+    public function getHeader(string $name): mixed {
         return $this->headers[$name] ?? null;
     }
 
     /**
-     * Check if a header exists
+     * Check if an HTTP header exists
      * 
      * @param string $name Header name
      * @return bool
@@ -58,7 +66,7 @@ class HttpHeaders {
     }
 
     /**
-     * Remove a header
+     * Remove an HTTP header
      * 
      * @param string $name Header name
      * @return void
@@ -70,7 +78,7 @@ class HttpHeaders {
     }
 
     /**
-     * Remove all headers
+     * Remove all HTTP headers
      * 
      * @return void
      */
@@ -79,7 +87,7 @@ class HttpHeaders {
     }
 
     /**
-     * Get all headers
+     * Get all HTTP headers
      * 
      * @return array
      */
@@ -88,7 +96,7 @@ class HttpHeaders {
     }
 
     /**
-     * Send all headers
+     * Send all HTTP headers
      * 
      * @return void
      */

@@ -15,6 +15,7 @@ use Closure;
  * 
  * @method void route(string $http_method, string $route_path, callable $controller) Add a route to the collection
  * @method void routeGroup(string $prefix, Closure $closure) Add a routes group to the collection
+ * @method array getRoutes() Return all the registered routes from this instance
  */
 class RouteCollection {
 

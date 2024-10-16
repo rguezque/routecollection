@@ -12,6 +12,7 @@ namespace rguezque\RouteCollection;
  * Configure and enable CORS (Cross-Origin Resources Sharing)
  * 
  * @method CorsConfig addOrigin(string $origin, array $methods = [], array $headers = []) Add an allowed origin
+ * @method void resolve(ServerRequest $request) Apply and execute the CORS configuration
  */
 class CorsConfig {
     /**

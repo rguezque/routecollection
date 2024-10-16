@@ -10,11 +10,13 @@ namespace rguezque\RouteCollection;
 
 use PDO;
 use PDOException;
+use PDOStatement;
 
 /**
  * Create a singleton PDO connection to a database. Needs connection parameters from a .env file previously loaded ('DB_DSN', 'DB_USERNAME', 'DB_PASSWORD')
  * 
- * @method PDO getInstance
+ * @method PDO getInstance() Return the PDO instance
+ * @method PDOStatement run(string $sql, array $params = null) Execute a query and return a PDOStatement object. Params can be an associative array when using named params prefixed with colons(:) in pdo query
  */
 class PdoSingleton {
     /**
@@ -38,7 +40,7 @@ class PdoSingleton {
             $this->pdo = new PDO($dsn, $username, $password);
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            throw new PDOException('Connection failed: ' . $e->getMessage()) . PHP_EOL . $e->getTraceAsString();
+            throw new PDOException('Connection failed: ' . $e->getMessage() . PHP_EOL . $e->getTraceAsString());
         }
     }
 
@@ -53,6 +55,20 @@ class PdoSingleton {
         }
 
         return self::$pdo;
+    }
+
+    /**
+     * Execute a query and return a PDOStatement object. Params can be an associative array when using named params prefixed with colons(:) in pdo query
+     * 
+     * @param string $sql SQL query
+     * @param array $params Query parameters
+     * @return PDOStatement
+     */
+    public static function run(string $sql, array $params = null): PDOStatement {
+        $stmt = self::getInstance()->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt;
     }
 
     /**

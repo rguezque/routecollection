@@ -8,6 +8,18 @@
 
 namespace rguezque\RouteCollection;
 
+use Exception;
+
+/**
+ * Represent an HTTP response
+ * 
+ * @method void clear() Reset the initial values for response
+ * @method void setStatusCode(int $code) Set the HTTP status code
+ * @method int getStatusCode() Get the HTTP status code
+ * @method void setBody(string $body) Set the body content. Multiple calls appends to the content
+ * @method string getBody() Get the body content
+ * @method void send() Send the response
+ */
 class HttpResponse {
     /**
      * HTTP status code
@@ -83,12 +95,20 @@ class HttpResponse {
         $this->body .= $body;
     }
 
-    // Get the body content
-    public function getBody() {
+    /**
+     * Get the body content
+     * 
+     * @return string
+     */
+    public function getBody(): string {
         return $this->body;
     }
 
-    // Send the response
+    /**
+     * Send the response
+     * 
+     * @return void
+     */
     public function send() {
         // Set the status code
         http_response_code($this->status_code);

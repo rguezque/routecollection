@@ -10,7 +10,17 @@ namespace rguezque\RouteCollection;
 
 use JsonSerializable;
 
-class Collection implements CollectionInterface, JsonSerializable {
+/**
+ * Represent a collection or parameters
+ * 
+ * @method mixed get(string $name, mixed $default = null) Return a param by name
+ * @method void set(string $name, mixed $value) Set or overwrite a param
+ * @method array all() Return all params array
+ * @method bool has(string $name) Return true if a param exists and is different to null, otherwise false
+ * @method void remove(string $name) Remove a param by name
+ * @method void clear() Remove all params
+ */
+class Collection implements JsonSerializable {
 
     /**
      * Params collection
@@ -32,10 +42,11 @@ class Collection implements CollectionInterface, JsonSerializable {
      * Return a param by name
      * 
      * @param string $name Param name
+     * @param mixed $default Default value to return
      * @return mixed
      */
-    public function get(string $name): mixed {
-        return $this->data[$name];
+    public function get(string $name, mixed $default = null): mixed {
+        return $this->has($name) ? $this->data[$name] : $default;
     }
 
     /**
@@ -66,6 +77,18 @@ class Collection implements CollectionInterface, JsonSerializable {
      */
     public function has(string $name): bool {
         return isset($this->data[$name]);
+    }
+
+    /**
+     * Remove a param by name
+     * 
+     * @param string $name Param name
+     * @return void
+     */
+    public function remove(string $name): void {
+        if($this->has($name)) {
+            unset($this->data[$name]);
+        }
     }
 
     /**

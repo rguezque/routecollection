@@ -11,7 +11,7 @@ namespace rguezque\RouteCollection;
 /**
  * Simple engine that allows render templates
  * 
- * @method string render(tring $view, array $data = []) Render the template and return the result as string
+ * @method string fetch(tring $view, array $data = []) Fetch the template from buffer and return the result as string to be render after
  */
 class TemplateEngine {
     /**

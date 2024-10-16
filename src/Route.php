@@ -10,6 +10,10 @@ namespace rguezque\RouteCollection;
 
 /**
  * Represents a route
+ * 
+ * @method string getPath() Retrieve the route path
+ * @method string getMethod() Retrieve the route method
+ * @method callable getController() Retrieve the route controller
  */
 class Route {
     /**
@@ -46,15 +50,30 @@ class Route {
         $this->controller = $controller;
     }
 
-    public function getPath() {
+    /**
+     * Retrieve the route path
+     * 
+     * @return string
+     */
+    public function getPath(): string {
         return $this->route_path;
     }
 
-    public function getMethod() {
+    /**
+     * Retrieve the route method
+     * 
+     * @return string
+     */
+    public function getMethod(): string {
         return $this->http_method;
     }
 
-    public function getController() {
+    /**
+     * retrieve the route controller
+     * 
+     * @return callable
+     */
+    public function getController(): callable {
         return $this->controller;
     }
 }

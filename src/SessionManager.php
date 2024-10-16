@@ -10,6 +10,16 @@ namespace rguezque\RouteCollection;
 
 /**
  * Manage the $_SESSION variables and session data
+ * 
+ * @method SessionManager getInstance() Return a singleton instance of SessionManager
+ * @method SessionManager start() Start new or resume existing session
+ * @method bool isStarted() Return true if a session is initialized
+ * @method void set(string $key, mixed $value) Set a session var
+ * @method mixed get(string $key) Retrieve a session var
+ * @method void remove(string $key) Remove a session variable by name
+ * @method void destroy() Free session variables and destroys all data registered to a session
+ * @method bool exists(string $key) Return true if a session variable exists, otherwise false
+ * @method array getAll() Retrieve all the session variables
  */
 class SessionManager {
     /**
@@ -84,8 +94,9 @@ class SessionManager {
      * Remove a session variable by name
      * 
      * @param string $key Session variable name
+     * @return void
      */
-    public function unset(string $key): void {
+    public function remove(string $key): void {
         unset($_SESSION[$key]);
     }
 
@@ -102,9 +113,10 @@ class SessionManager {
     /**
      * Return true if a session variable exists, otherwise false
      * 
+     * @param string $key Session variable name
      * @return bool
      */
-    public function exists($key): bool {
+    public function exists(string $key): bool {
         return isset($_SESSION[$key]);
     }
 

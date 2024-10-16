@@ -8,6 +8,14 @@
 
 namespace rguezque\RouteCollection;
 
+/**
+ * Represent the current request
+ * 
+ * @method ServerRequest withGlobals(array $get, array $post, array $server, array $cookie, array $files, array $params) Return an instance of ServerRequest with custom data for globals
+ * @method void withParams(array $params) Allows set new values to route params
+ * @method Collection getRequestHeaders() Retrieve all HTTP headers from the current request
+ * @method string buildQuery(string $uri, array $params) Generate URL-encoded query string
+ */
 class ServerRequest {
     /**
      * $_GET params
@@ -99,6 +107,16 @@ class ServerRequest {
      */
     public function withParams(array $params): void {
         $this->params = new Collection($params);
+    }
+
+    /**
+     * Retrieve all HTTP headers from the current request
+     * 
+     * @return Collection
+     */
+    public function getRequestHeaders(): Collection {
+        $headers =  getallheaders();
+        return new Collection($headers);
     }
 
     /**
