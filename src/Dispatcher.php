@@ -41,23 +41,40 @@ class Dispatcher {
     private $routes = [];
 
     /**
+     * CORS configuration
+     * 
+     * @var CorsConfig
+     */
+    private $cors;
+
+    /**
      * Initialize dispatcher
      * 
      * @param Routecollection $route_collection The routes collection
+     * @param CorsConfig $cors The CORS configuration to resolve
      */
-    public function __construct(RouteCollection $route_collection) {
+    public function __construct(RouteCollection $route_collection, ?CorsConfig $cors = null) {
         $this->routes = $route_collection->getRoutes();
+        if(null !== $cors) {
+            $this->cors = $cors;
+        }
     }
 
     /**
      * Handle the request URi and HTTP request method, comparing them with each defined route until the first match is found. 
      * Then dispatch the route controller and route params; additionally data such as status code of routing, route URI and route HTTP method.
      * 
-     * @param string $request_uri The request URI
-     * @param string $request_method The request HTTP method
+     * @param ServerRequest $request A ServerRequest object with actual request
      * @return array
      */
-    public function match(string $request_uri, string $request_method): array {
+    public function match(ServerRequest $request): array {
+        if(null !== $this->cors) {
+            call_user_func($this->cors, $request);
+        }
+
+        $request_uri = $request->server->get('REQUEST_URI');
+        $request_method = $request->server->get('REQUEST_METHOD');
+
         $request_uri = rawurldecode(parse_url($request_uri, PHP_URL_PATH));
 
         if('/' !== $request_uri) {
@@ -87,8 +104,16 @@ class Dispatcher {
         ];
     }
 
-    public function dispatch(string $request_uri, string $request_method) {
-        $router_params = $this->match($request_uri, $request_method);
+    /**
+     * Provides a way to process requests and routes. If the route does not exist it throws a RouteNotFoundException and if the route's controller does not return an HttpResponse it throws an UnexpectedValueException
+     * 
+     * @param ServerRequest $request A ServerRequest object with request data
+     * @return HttpResponse
+     * @throws UnexpectedValueException Whet the controller don't return a HttpResponse object
+     * @throws RuntimeException When tue route don't exist
+     */
+    public function dispatch(ServerRequest $request): HttpResponse {
+        $router_params = $this->match($request);
 
         switch($router_params['status_code']) {
             case Dispatcher::FOUND: 
@@ -103,7 +128,7 @@ class Dispatcher {
                     break;
                 }
         
-                SapiEmitter::emit($result);
+                return $result;
                 break;
         
             case Dispatcher::NOT_FOUND:

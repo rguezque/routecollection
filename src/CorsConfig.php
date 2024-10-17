@@ -72,7 +72,7 @@ class CorsConfig {
      * @param ServerRequest $request ServerRequest object with request information
      * @return void
      */
-    public function resolve(ServerRequest $request): void {
+    public function __invoke(ServerRequest $request): void {
         $server = $request->server;
 
         if($server->has('HTTP_ORIGIN')) {

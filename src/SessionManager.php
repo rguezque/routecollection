@@ -84,10 +84,11 @@ class SessionManager {
      * Retrieve a session var
      * 
      * @param string $key Session variable name
+     * @param mixed $default Dafault value to return if session var don't exists
      * @return mixed
      */
-    public function get(string $key): mixed {
-        return $_SESSION[$key] ?? null;
+    public function get(string $key, mixed $default = null): mixed {
+        return $this->exists($key) ? $_SESSION[$key] : $default;
     }
 
     /**
