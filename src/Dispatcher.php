@@ -8,6 +8,10 @@
 
 namespace rguezque\RouteCollection;
 
+use ErrorException;
+use RuntimeException;
+use UnexpectedValueException;
+
 /**
  * Routes dispatcher
  * 
@@ -81,6 +85,35 @@ class Dispatcher {
             'request_method' => $request_method,
             'request_uri' => $request_uri
         ];
+    }
+
+    public function dispatch(string $request_uri, string $request_method) {
+        $router_params = $this->match($request_uri, $request_method);
+
+        switch($router_params['status_code']) {
+            case Dispatcher::FOUND: 
+                $request = new ServerRequest;
+                $request->withParams($router_params['route_params']);
+                $result = call_user_func($router_params['route_controller'], $request);
+                ob_get_clean();
+                
+                if(is_null($result) || !$result instanceof HttpResponse) {
+                    $message = sprintf('The route "%s" with %s method must return an HttpResponse, catched %s.', $router_params['route_path'], $router_params['route_method'], gettype($result));
+                    throw new UnexpectedValueException($message); // error 406
+                    break;
+                }
+        
+                SapiEmitter::emit($result);
+                break;
+        
+            case Dispatcher::NOT_FOUND:
+                $message = sprintf('The request URI "%s" with %s method do not match any route.', $router_params['request_uri'], $router_params['request_method']);
+                throw new RuntimeException($message); // error 404
+                break;
+        
+            default:
+                throw new ErrorException('Something went wrong!'); // error 500
+        }
     }
 
     /**

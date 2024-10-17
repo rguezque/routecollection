@@ -26,14 +26,14 @@ class HttpResponse {
      * 
      * @var int
      */
-    private $status_code;
+    protected $status_code;
 
     /**
      * HTTP headers container
      * 
      * @var HttpHeaders
      */
-    public $headers;
+    protected $headers;
 
     /**
      * HTTP body
@@ -102,24 +102,6 @@ class HttpResponse {
      */
     public function getBody(): string {
         return $this->body;
-    }
-
-    /**
-     * Send the response
-     * 
-     * @return void
-     */
-    public function send() {
-        // Set the status code
-        http_response_code($this->status_code);
-
-        // Send the headers
-        if(!headers_sent()) {
-            $this->headers->sendHeaders();
-        }
-
-        // Output the body
-        echo $this->body;
     }
 }
 
