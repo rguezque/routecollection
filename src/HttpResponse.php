@@ -8,17 +8,12 @@
 
 namespace rguezque\RouteCollection;
 
-use Exception;
-
 /**
  * Represent an HTTP response
  * 
  * @method void clear() Reset the initial values for response
  * @method void setStatusCode(int $code) Set the HTTP status code
  * @method int getStatusCode() Get the HTTP status code
- * @method void setBody(string $body) Set the body content. Multiple calls appends to the content
- * @method string getBody() Get the body content
- * @method void send() Send the response
  */
 class HttpResponse {
     /**
@@ -33,26 +28,31 @@ class HttpResponse {
      * 
      * @var HttpHeaders
      */
-    protected $headers;
+    public $headers;
 
     /**
-     * HTTP body
+     * HTTP response body
      * 
-     * @var string
+     * @var Stream
      */
-    protected $body;
+    public $body;
 
     /**
      * Initialize the http response
      * 
-     * @param string $body The content of http response
+     * @param string $content The content of http response
      * @param int $status_code The http status code of response
      * @param array $headers HTTP headers for response
      */
-    public function __construct(string $body = '', int $status_code = 200, array $headers = []) {
+    public function __construct(string $content = '', int $status_code = 200, array $headers = []) {
         $this->status_code = $status_code;
         $this->headers = [] !== $headers ? new HttpHeaders($headers) : new HttpHeaders;
-        $this->body = $body;
+        $stream = new Stream(fopen('php://memory', 'r+'));
+        if('' !== $content) {
+            $stream->write($content);
+        }
+        $this->body = $stream;
+        
     }
 
     /**
@@ -63,7 +63,7 @@ class HttpResponse {
     public function clear(): void {
         $this->status_code = 200;
         $this->headers->clearAllHeaders();
-        $this->body = null;
+        $this->body = new Stream(fopen('php://memory', 'r+'));
     }
 
     /**
@@ -85,24 +85,6 @@ class HttpResponse {
         return $this->status_code;
     }
 
-    /**
-     * Set the body content. Multiple calls appends to the content
-     * 
-     * @param string $body The content for response
-     * @return void
-     */
-    public function setBody(string $body): void {
-        $this->body .= $body;
-    }
-
-    /**
-     * Get the body content
-     * 
-     * @return string
-     */
-    public function getBody(): string {
-        return $this->body;
-    }
 }
 
 ?>

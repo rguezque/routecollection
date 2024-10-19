@@ -19,7 +19,8 @@ class SapiEmitter extends HttpResponse {
         }
 
         // Output the body
-        echo $response->body;
+        $response->body->rewind();
+        echo $response->body->getContents();
     }
 }
 
