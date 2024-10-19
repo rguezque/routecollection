@@ -22,14 +22,14 @@ class ServerRequest {
      * 
      * @var Collection
      */
-    public $get;
+    public $query;
 
     /**
      * $_POST params
      * 
      * @var Collection
      */
-    public $post;
+    public $body;
 
     /**
      * $_SERVER params
@@ -62,35 +62,35 @@ class ServerRequest {
     /**
      * PHP Input Stream (php://input)
      * 
-     * @var string
+     * @var PhpInputStream
      */
     public $input;
 
     public function __construct() {
-        $this->get = new Collection($_GET);
-        $this->post = new Collection($_POST);
+        $this->query = new Collection($_GET);
+        $this->body = new Collection($_POST);
         $this->server = new Collection($_SERVER);
         $this->cookie = new Collection($_COOKIE);
         $this->files = new Collection($_FILES);
         $this->params = new Collection;
-        $this->input = file_get_contents('php://input');
+        $this->input = new PhpInputStream;
     }
 
     /**
      * Return an instance of ServerRequest with custom data for globals
      * 
-     * @param array $get $_GET data
-     * @param array $get $_POST data
-     * @param array $get $_SERVER data
-     * @param array $get $_COOKIE data
+     * @param array $query $_GET data
+     * @param array $body $_POST data
+     * @param array $server $_SERVER data
+     * @param array $cookie $_COOKIE data
      * @param array $get $_FILES data
      * @param array $get Router params
      * @return ServerRequest
      */
-    public static function withGlobals(array $get, array $post, array $server, array $cookie, array $files, array $params): ServerRequest {
+    public static function withGlobals(array $query, array $body, array $server, array $cookie, array $files, array $params): ServerRequest {
         $request = new ServerRequest;
-        $request->get = new Collection($get);
-        $request->post = new Collection($post);
+        $request->query = new Collection($query);
+        $request->body = new Collection($body);
         $request->server = new Collection($server);
         $request->cookie = new Collection($cookie);
         $request->files = new Collection($files);
