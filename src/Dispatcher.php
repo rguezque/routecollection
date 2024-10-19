@@ -110,7 +110,7 @@ class Dispatcher {
      * @param ServerRequest $request A ServerRequest object with request data
      * @return HttpResponse
      * @throws UnexpectedValueException Whet the controller don't return a HttpResponse object
-     * @throws RuntimeException When tue route don't exist
+     * @throws RuntimeException When the request uri don't match any route
      */
     public function dispatch(ServerRequest $request): HttpResponse {
         $router_params = $this->match($request);

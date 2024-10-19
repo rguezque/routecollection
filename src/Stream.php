@@ -88,7 +88,7 @@ class Stream {
     }
 
     /**
-     * Add content to stream
+     * Write content to stream and return the total bytes written, or false on error
      * 
      * @param mixed $string
      * @return int|false
