@@ -2,6 +2,20 @@
 
 namespace rguezque\RouteCollection;
 
+/**
+ * Represent a PHP stream
+ * 
+ * @method int|false write(mixed $string) Write content to stream and return the total bytes written, or false on error
+ * @method string|false read(int $length) Read the stream
+ * @method string|false getContents() Retrieve the remainder content of the stream from current pointer position
+ * @method mixed detach() Free and return the current stream
+ * @method int getSize() Returns the bytes size of the stream
+ * @method int tell() Return the current position of the stream read/write pointer
+ * @method bool eof() Return true if the stream pointer is at end-of-file, otherwise false
+ * @method void seek(int $offset, int $whence = SEEK_SET) Sets the file position indicator for the file referenced by stream. The new position, measured in bytes from the beginning of the file, is obtained by adding offset to the position specified by whence.
+ * @method void rewind() Rewind the stream pointer at beginning
+ * @method void close() Close the stream from writing
+ */
 class Stream {
     private $stream;
 
@@ -14,15 +28,32 @@ class Stream {
     }
 
     /**
-     * Close the stream
+     * Write content to stream and return the total bytes written, or false on error
      * 
-     * @return void
+     * @param mixed $string
+     * @return int|false
      */
-    public function close(): void {
-        if ($this->stream) {
-            fclose($this->stream);
-            $this->stream = null;
-        }
+    public function write(mixed $string): int|false {
+        return fwrite($this->stream, $string);
+    }
+
+    /**
+     * Read the stream 
+     * 
+     * @param int $length Up to length number of bytes read
+     * @return string|false
+     */
+    public function read(int $length): string|false {
+        return fread($this->stream, $length);
+    }
+
+    /**
+     * Retrieve the remainder content of the stream from current pointer position
+     * 
+     * @return string|false
+     */
+    public function getContents(): string|false {
+        return stream_get_contents($this->stream);
     }
 
     /**
@@ -63,10 +94,6 @@ class Stream {
         return feof($this->stream);
     }
 
-    public function isSeekable() {
-        return true;
-    }
-
     /**
      * Sets the file position indicator for the file referenced by stream. The new position, measured in bytes from the beginning of the file, is obtained by adding offset to the position specified by whence.
      * 
@@ -74,7 +101,7 @@ class Stream {
      * @param int $whence The whence
      * @return void
      */
-    public function seek($offset, $whence = SEEK_SET): void {
+    public function seek(int $offset, int $whence = SEEK_SET): void {
         fseek($this->stream, $offset, $whence);
     }
 
@@ -88,32 +115,15 @@ class Stream {
     }
 
     /**
-     * Write content to stream and return the total bytes written, or false on error
+     * Close the stream from writing
      * 
-     * @param mixed $string
-     * @return int|false
+     * @return void
      */
-    public function write(mixed $string): int|false {
-        return fwrite($this->stream, $string);
-    }
-
-    /**
-     * Read the stream 
-     * 
-     * @param int $length Up to length number of bytes read
-     * @return string|false
-     */
-    public function read(int $length): string|false {
-        return fread($this->stream, $length);
-    }
-
-    /**
-     * Retrieve the remainder content of the stream from current pointer position
-     * 
-     * @return string|false
-     */
-    public function getContents(): string|false {
-        return stream_get_contents($this->stream);
+    public function close(): void {
+        if ($this->stream) {
+            fclose($this->stream);
+            $this->stream = null;
+        }
     }
 
     public function __toString() {
