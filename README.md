@@ -338,7 +338,9 @@ $pdo = PdoSingleton::getInstance();
 
 La clase `SessionManager` permite manipular las variabes de `$_SESSION` a través de una instancia singleton.
 
-- `getInstance()`: Devuelve una instancia singleton de `Sessionmanager`.
+- `getInstance(string $session_name = SessionManager::DEFAULT_SESSION_NAME)`: Devuelve una instancia singleton de `Sessionmanager`. Recibe como argumento un nombre de sesión, aunque es opcional es recomendable para evitar y reducir posibles colisiones de variables de sesión con otras aplicaciones web. 
+  >[!TIP]
+  >Utiliza variables de entorno (`.env`) para declarar un nombre de sesión a través de toda la aplicación.
 - `start()`: Inicia o retoma una sesión activa. Siempre debe invocarse antes de los demás métodos (Permite encadenamiento `$session->start()->get('foo')`).
 - `isStarted()`: Devuelve `true` si una sesión está activa, `false` en caso contrario.
 - `set(string $key, mixed $value)`: Crea o sobrescribe una variable de sesión.

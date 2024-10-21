@@ -11,8 +11,8 @@ namespace rguezque\RouteCollection;
 /**
  * Manage the $_SESSION variables and session data
  * 
- * @method SessionManager getInstance() Return a singleton instance of SessionManager
- * @method SessionManager start() Start new or resume existing session
+ * @method SessionManager getInstance(string $session_name = SessionManager::DEFAULT_SESSION_NAME) Return a singleton instance of SessionManager
+ * @method SessionManager start() Start or resume session
  * @method bool isStarted() Return true if a session is initialized
  * @method void set(string $key, mixed $value) Set a session var
  * @method mixed get(string $key) Retrieve a session var
@@ -23,6 +23,12 @@ namespace rguezque\RouteCollection;
  */
 class SessionManager {
     /**
+     * Default session name
+     * 
+     * @var string
+     */
+    private const DEFAULT_SESSION_NAME = '__ROUTER_SESSION_VARS_MANAGER__';
+    /**
      * Store the singleton instance of SessionManager
      * 
      * @var SessionManager
@@ -30,30 +36,40 @@ class SessionManager {
     private static $instance;
 
     /**
+     * Custom session name
+     * 
+     * @var string
+     */
+    private $session_name;
+
+    /**
      * Constructor disabled for singleton
      */
-    private function __construct() {}
+    private function __construct(string $session_name) {
+        $this->session_name = $session_name;
+    }
 
     /**
      * Return a singleton instance of SessionManager
      * 
      * @return SessionManager
      */
-    public static function getInstance(): SessionManager {
+    public static function getInstance(string $session_name = SessionManager::DEFAULT_SESSION_NAME): SessionManager {
         if (!self::$instance) {
-            self::$instance = new self();
+            self::$instance = new self($session_name);
         }
 
         return self::$instance;
     }
 
     /**
-     * Start new or resume existing session
+     * Start or resume session
      * 
      * @return SessionManager
      */
     public function start(): SessionManager {
         if(!$this->isStarted()) {
+            session_name($this->session_name);
             session_start();
         }
 
