@@ -60,9 +60,10 @@ $router->routeGroup('/foo', function(RouteCollection $route) {
 });
 
 $dispatcher = new Dispatcher($router);
+$request = new ServerRequest;
 
 // Despacha el router para la actual petición
-$router_params = $dispatcher->match($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
+$router_params = $dispatcher->match($request);
 
 // Implementar acciones con el resultado...
 ```
