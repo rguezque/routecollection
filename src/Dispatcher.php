@@ -15,7 +15,7 @@ use UnexpectedValueException;
 /**
  * Routes dispatcher
  * 
- * @method array match(ServerRequest $request) Run the router and handle the request URI and request http method
+ * @method array match(string $request_uri, string $request_method) Run the router and handle the request URI and request http method
  * @method HttpResponse dispatch(ServerRequest $request) Provides a way to process requests and routes. If the route does not exist it throws a RouteNotFoundException and if the route's controller does not return an HttpResponse it throws an UnexpectedValueException
  * @static void halt(HttpResponse $response) Stop the router
  */
@@ -66,16 +66,14 @@ class Dispatcher {
      * Handle the request URi and HTTP request method, comparing them with each defined route until the first match is found. 
      * Then dispatch the route controller and route params; additionally data such as status code of routing, route URI and route HTTP method.
      * 
-     * @param ServerRequest $request A ServerRequest object with actual request
+     * @param string $request_uri The request URI
+     * @param string $request_method The request http method
      * @return array
      */
-    public function match(ServerRequest $request): array {
+    public function match(string $request_uri, string $request_method): array {
         if(null !== $this->cors) {
-            call_user_func($this->cors, $request);
+            call_user_func($this->cors);
         }
-
-        $request_uri = $request->server->get('REQUEST_URI');
-        $request_method = $request->server->get('REQUEST_METHOD');
 
         $request_uri = rawurldecode(parse_url($request_uri, PHP_URL_PATH));
 
@@ -83,10 +81,11 @@ class Dispatcher {
             $request_uri = rtrim($request_uri, '/\\');
         }
 
-        foreach ($this->routes as $route) {
+        $routes = $this->routes[$request_method] ?? []; 
+        foreach ($routes as $route) {
             $pattern = $this->getRegexPattern($route->getPath());
 
-            if ($route->getMethod() === $request_method && preg_match($pattern, $request_uri, $params)) {
+            if (preg_match($pattern, $request_uri, $params)) {
                 array_shift($params);
 
                 return [
@@ -115,7 +114,7 @@ class Dispatcher {
      * @throws RuntimeException When the request uri don't match any route
      */
     public function dispatch(ServerRequest $request): HttpResponse {
-        $router_params = $this->match($request);
+        $router_params = $this->match($request->server->get('REQUEST_URI'), $request->server->get('REQUEST_METHOD'));
 
         switch($router_params['status_code']) {
             case Dispatcher::FOUND: 

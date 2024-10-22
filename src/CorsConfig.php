@@ -69,16 +69,15 @@ class CorsConfig {
     /**
      * Apply and execute the CORS configuration
      * 
-     * @param ServerRequest $request ServerRequest object with request information
      * @return void
      */
-    public function __invoke(ServerRequest $request): void {
-        $server = $request->server;
+    public function __invoke(): void {
+        $http_origin = $_SERVER['HTTP_ORIGIN'];
 
-        if($server->has('HTTP_ORIGIN')) {
+        if(isset($http_origin)) {
             foreach ($this->origins as $origin => $config) {
-                if (preg_match('#' . $origin . '#', $server->get('HTTP_ORIGIN'))) {
-                    header("Access-Control-Allow-Origin: " . $server->get('HTTP_ORIGIN'));
+                if (preg_match('#' . $origin . '#', $http_origin)) {
+                    header("Access-Control-Allow-Origin: " . $http_origin);
                     header("Access-Control-Allow-Methods: " . implode(', ', $config['methods']));
                     header("Access-Control-Allow-Headers: " . implode(', ', $config['headers']));
                     header('Access-Control-Max-Age: 60'); //Maximum number of seconds the results can be cached

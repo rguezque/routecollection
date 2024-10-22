@@ -60,10 +60,9 @@ $router->routeGroup('/foo', function(RouteCollection $route) {
 });
 
 $dispatcher = new Dispatcher($router);
-$request = new ServerRequest;
 
 // Despacha el router para la actual petición
-$router_params = $dispatcher->match($request);
+$router_params = $dispatcher->match($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
 
 // Implementar acciones con el resultado...
 ```
@@ -125,7 +124,7 @@ $router = new RouteCollection('/mi_router');
 
 Para ejecutar el router se debe crear una instancia de `Dispatcher` el cual recibe como argumento un objeto `RouteCollection` y opcionalmante un objeto `CorsConfig` (Ver [Configurar CORS](#configurar-cors)).
 
-El método `Dispatcher::match` permite correr el router y recibe un objeto `ServerRequest`. Buscará una ruta que corresponda o se empareje con la URI solicitada; si halla alguna coincidencia devolvera un *array* con los datos de la ruta.
+El método `Dispatcher::match` permite correr el router y recibe la URi de petición y el método HTTP de la petición. Buscará una ruta que corresponda o se empareje con la URI solicitada; si halla alguna coincidencia devolvera un *array* con los datos de la ruta.
 
 - `status_code`: Con valor `1` que significa que fue hallada una coincidencia.
 - `route_path`: La definicion de la URI de la ruta.
