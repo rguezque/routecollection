@@ -144,9 +144,9 @@ De esta forma se puede decidir como implementar las acciones del controlador des
 
 El método `Dispatcher::dispatch` proporciona un motor de funcionamiento default para el router. Recibe un argumento de tipo `ServerRequest` y devuelve un objeto `HttpResponse`, por lo cual, todos los controladores deben retornar un objeto `HttpResponse` de lo contrario lanzara un `UnexpectedValueException`. 
 
-A cada controlador se le inyecta un argumento de tipo `ServerRequest` el cual contiene toda la información sobre la petición actual así como los parámetros de ruta que hayan sido definidos.
+A cada controlador se le inyecta un argumento de tipo `ServerRequest` el cual contiene toda la información sobre la petición actual así como los parámetros de ruta que hayan sido definidos. Si una ruta no existe el router lanzará un `Runtime Exception`.
 
-Si una ruta no existe el router lanzará un `Runtime Exception`.
+Para detener el router invoca el método `Dispatcher::halt` el cual recibe un objeto `HttpResponse` y se encarga de enviar la respuesta e inmediatamente detiene el *script*.
 
 ## Configurar CORS
 

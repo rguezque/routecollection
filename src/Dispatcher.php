@@ -17,6 +17,7 @@ use UnexpectedValueException;
  * 
  * @method array match(string $request_uri, string $request_method) Run the router and handle the request URI and request http method
  * @method HttpResponse dispatch(ServerRequest $request) Provides a way to process requests and routes. If the route does not exist it throws a RouteNotFoundException and if the route's controller does not return an HttpResponse it throws an UnexpectedValueException
+ * @static void halt(HttpResponse $response) Stop the router
  */
 class Dispatcher {
 
@@ -140,6 +141,16 @@ class Dispatcher {
             default:
                 throw new ErrorException('Something went wrong!'); // error 500
         }
+    }
+
+    /**
+     * Stop the router
+     * 
+     * @param HttpResponse $response Response object
+     */
+    public static function halt(HttpResponse $response): void {
+        SapiEmitter::emit($response);
+        exit();
     }
 
     /**
