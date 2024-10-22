@@ -57,7 +57,7 @@ class RouteCollection {
         $route_path = $this->prefix.self::strPathFormat($route_path);
         
         $route = new Route($http_method, $route_path, $controller);
-        $this->routes[] = $route;
+        $this->routes[$http_method][] = $route;
     }
 
     /**
@@ -73,7 +73,7 @@ class RouteCollection {
         // Processes the routes in the route group to retrieve the routes registered in the $route_collection object and merge them with the other existing routes.
         call_user_func($closure, $route_collection);
         // Retrieve the generated routes and merge
-        $this->routes = array_merge($this->routes, $route_collection->getRoutes());
+        $this->routes = array_merge_recursive($this->routes, $route_collection->getRoutes());
     }
 
     /**
