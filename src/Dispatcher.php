@@ -83,16 +83,16 @@ class Dispatcher {
 
         $routes = $this->routes[$request_method] ?? []; 
         foreach ($routes as $route) {
-            $pattern = $this->getRegexPattern($route->getPath());
+            $pattern = $this->getRegexPattern($route->getRoutePath());
 
             if (preg_match($pattern, $request_uri, $params)) {
                 array_shift($params);
 
                 return [
                     'status_code' => Dispatcher::FOUND,
-                    'route_path' => $route->getPath(),
-                    'route_method' => $route->getMethod(),
-                    'route_controller' => $route->getController(),
+                    'route_path' => $route->getRoutePath(),
+                    'route_method' => $route->getRouteMethod(),
+                    'route_controller' => $route->getRouteController(),
                     'route_params' => $params
                 ];
             }
