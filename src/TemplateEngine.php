@@ -8,6 +8,8 @@
 
 namespace rguezque\RouteCollection;
 
+use ErrorException;
+
 /**
  * Simple engine that allows render templates
  * 
@@ -45,10 +47,16 @@ class TemplateEngine {
      * @param string $view The template to render
      * @param array $data Arguments to send for template
      * @return string
+     * @throws ErrorException When the file template is not found
      */
     public function fetch(string $view, array $data = []): string {
         $view = trim($view, '/\\ ');
         $template_file = $this->templates_dir . $view . '.php';
+        
+        if(!file_exists($template_file)) {
+            throw new ErrorException(sprintf('The template "%s" is not found', $view));
+        }
+
         $cache_file = $this->cache_dir . $view . '.cache';
 
         if (!file_exists($cache_file) || filemtime($template_file) > filemtime($cache_file)) {

@@ -29,7 +29,7 @@ class PdoSingleton {
     /**
      * Creates the PDO instance representing a connection to a database
      * 
-     * @throws PDOException
+     * @throws PDOException When the db connection fails
      */
     private function __construct() {
         $dsn = $_ENV['DB_DSN'];
@@ -50,7 +50,7 @@ class PdoSingleton {
      * @return PDO
      */
     public static function getInstance(): PDO {
-        if (self::$pdo === null) {
+        if (null === self::$pdo) {
             self::$pdo = new self();
         }
 
