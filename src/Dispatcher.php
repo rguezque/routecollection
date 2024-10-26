@@ -9,6 +9,8 @@
 namespace rguezque\RouteCollection;
 
 use ErrorException;
+use rguezque\RouteCollection\Exceptions\InternalServerErrorException;
+use rguezque\RouteCollection\Exceptions\RouteNotFoundException;
 use RuntimeException;
 use UnexpectedValueException;
 
@@ -111,8 +113,8 @@ class Dispatcher {
      * @param ServerRequest $request A ServerRequest object with request data
      * @return HttpResponse
      * @throws UnexpectedValueException Whet the controller don't return a HttpResponse object
-     * @throws RuntimeException When the request uri don't match any route
-     * @throws ErrorException When occurs an unknow or server error
+     * @throws RouteNotFoundException When the request uri don't match any route
+     * @throws InternalServerErrorException When occurs an unknow or server error
      */
     public function dispatch(ServerRequest $request): HttpResponse {
         $router_params = $this->match($request->server->get('REQUEST_URI'), $request->server->get('REQUEST_METHOD'));
@@ -135,11 +137,11 @@ class Dispatcher {
         
             case Dispatcher::NOT_FOUND:
                 $message = sprintf('The request URI "%s" with %s method do not match any route.', $router_params['request_uri'], $router_params['request_method']);
-                throw new RuntimeException($message); // error 404
+                throw new RouteNotFoundException($message); // error 404
                 break;
         
             default:
-                throw new ErrorException('Something went wrong!'); // error 500
+                throw new InternalServerErrorException('Something went wrong!'); // error 500
         }
     }
 
