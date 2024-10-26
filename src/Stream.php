@@ -19,10 +19,18 @@ namespace rguezque\RouteCollection;
 class Stream {
     private $stream;
 
+    /**
+     * Initialize the stream
+     * 
+     * @param mixed $resource Resource of type stream
+     */
     public function __construct(mixed $resource){
         $this->stream = $resource;
     }
 
+    /**
+     * Close the stream
+     */
     public function __destruct() {
         $this->close();
     }

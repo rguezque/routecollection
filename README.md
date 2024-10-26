@@ -222,11 +222,11 @@ Cada atributo es una instancia de `Collection` excepto `input` que contiene una 
 - `remove(striong $name)`: Elimina un parámetro por nombre.
 - `clear()`: Elimina todos los parámetros.
 
-Para la clase `PhpInputStream` se tienen los métodos:
+Para la clase `PhpInputStream` se tienen el método `PhpInputStream::getStream` que puede recibir alguno de los siguientes argumentos:
 
-- `getParsedStr`: Parsea el stream cuando llega como un query del tipo `name=John&lastname=Doe` y lo devuelve en un objeto `Collection`.
-- `getDecodedJson`: Decodifica el stream cuando llega en formato JSON y lo devuelve en un objeto `Collection`.
-- `getRawData`: Devuelve el stream tal cual llega en la petición.
+- `PhpInputStream::RAW_DATA`: (Valor 1) Devuelve el stream tal cual llega en la petición. Este es el valor default si no se define un argumento para el método `PhpInputStream::getStream`.
+- `PhpInputStream::PARSED_STRING`: (Valor 2) Parsea el *query string* del tipo `name=John&lastname=Doe` y lo devuelve en un objeto `Collection`.
+- `PhpInputStream::DECODED_JSON`: (Valor 3) Decodifica el stream cuando llega en formato JSON y lo devuelve en un objeto `Collection`.
 
 Los siguientes métodos también son parte de `ServerRequest`:
 
@@ -318,29 +318,15 @@ $view = new TemplateEngine(
 $template = $view->fetch('home.php', ['Hola' => 'mundo']);
 ```
 
-## Base de datos
-
-La clase `PdoSingleton` como su nombre lo indica devuelve una instancia singleton de una conexión PDO, para lo cual es necesario definir variables de entorno en un archivo `.env` con las siguientes variables (por ejemplo):
-
-```
-DB_DSN="mysql:dbname=my_base_de_datos;host=localhost;port=3306;charset=utf8"
-DB_USERNAME="root"
-DB_PASSWORD="3kues3eeu974ke"
-```
-
-Para cargar estas variables es necesario alguna dependencia como `vlucas/phpdotenv`, después delo cual solo se debe llamar estáticamente a `PdoSingleton` el cual devueve una instancia de PDO:
-
-```php
-$pdo = PdoSingleton::getInstance();
-```
-
 ## Sesiones
 
 La clase `SessionManager` permite manipular las variabes de `$_SESSION` a través de una instancia singleton.
 
 - `getInstance(string $session_name = SessionManager::DEFAULT_SESSION_NAME)`: Devuelve una instancia singleton de `Sessionmanager`. Recibe como argumento un nombre de sesión, aunque es opcional es recomendable para evitar y reducir posibles colisiones de variables de sesión con otras aplicaciones web. 
+
   >[!TIP]
   >Utiliza variables de entorno (`.env`) para declarar un nombre de sesión a través de toda la aplicación.
+
 - `start()`: Inicia o retoma una sesión activa. Siempre debe invocarse antes de los demás métodos (Permite encadenamiento `$session->start()->get('foo')`).
 - `isStarted()`: Devuelve `true` si una sesión está activa, `false` en caso contrario.
 - `set(string $key, mixed $value)`: Crea o sobrescribe una variable de sesión.
