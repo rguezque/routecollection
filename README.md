@@ -353,3 +353,19 @@ La clase `Globals` permite manipular las variables de ` $GLOBALS` a través de s
 - `all()`: Devuelve todo el *array* de variables.
 - `remove(string $name)`: Elimina una variable por nombre.
 - `clear()`: Elimina todas las variables.
+
+## Error Handler
+
+La clase `ErrorHandler` permite manipular los errores de la aplicación y volcarlos en un registro `errors.log`. Dependiendo del ambiente de desarrollo mostrará el *trace string* del error o lo ocultará del usuario. El método `ErrorHandler::confiugure` recibe un array de opciones: 
+
+- `log_path`: Para definir el directorio donde se guardará el archivo `errors.log`. Automáticamente se intentará crear el directorio si no existe; en caso de fallar crealo manualmente y otorga permisos de escritura.
+- `timezone`: Define la zona horaria para la aplicación y el registro de errores. Debe ser un identificador válido dentro de los listados por la función PHP  `timezone_identifiers_list`. Si un identificador no es válido por default se asigna `UTC`.
+- `environment`: Define el ambiente de desarrollo para *desarrollo* (`developḿent`) o *producción* (`production`). Si no se define, por default se asigna `development`.
+
+```php
+ErrorHandler::configure([
+    'log_path' => __DIR__.'/logs',
+    'timezone' => 'America/Mexico_City',
+    'environment' => 'development'
+]);
+```
