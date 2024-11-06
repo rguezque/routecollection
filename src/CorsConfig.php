@@ -72,7 +72,7 @@ class CorsConfig {
      * @return void
      */
     public function __invoke(): void {
-        $http_origin = $_SERVER['HTTP_ORIGIN'];
+        $http_origin = $_SERVER['HTTP_ORIGIN'] ?? null;
 
         if(isset($http_origin)) {
             foreach ($this->origins as $origin => $config) {
