@@ -129,7 +129,7 @@ class ErrorHandler {
      * @return void
      */
     public function exceptionHandler($e): void {
-        // Vuelca el registro de roores a un archivo log
+        // Vuelca el registro de errores a un archivo log
         $log_path = rtrim($this->log_path, '/\\').'/';
 
         ini_set('log_errors', '1');
