@@ -135,7 +135,7 @@ class ErrorHandler {
         ini_set('log_errors', '1');
         ini_set('error_log', sprintf('%serrors.log', $log_path));
 
-        $err_string = sprintf('[%s] %s%s', $e->getCode(), $e->getMessage().PHP_EOL, $e->getTraceAsString());
+        $err_string = sprintf('[%s] %s%s', $e->getCode(), $e->getMessage().PHP_EOL, $e->getTraceAsString().PHP_EOL);
         error_log($err_string);
 
         'development' == $this->environment ? $this->showException($e) : $this->showProductionException();
