@@ -61,7 +61,7 @@ class PhpInputStream {
     public function getStream(int $format = PhpInputStream::RAW_DATA): Collection|string {
         switch ($format) {
             case self::RAW_DATA:
-                $data = $this->stream;
+                $data = $this->getRawData();
                 break;
             case self::PARSED_STRING:
                 $data = $this->getParsedStr();

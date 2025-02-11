@@ -21,21 +21,21 @@ class HttpResponse {
      * 
      * @var int
      */
-    protected $status_code;
+    protected int $status_code;
 
     /**
      * HTTP headers container
      * 
      * @var HttpHeaders
      */
-    public $headers;
+    public readonly HttpHeaders $headers;
 
     /**
      * HTTP response body
      * 
      * @var Stream
      */
-    public $body;
+    public readonly Stream $body;
 
     /**
      * Initialize the http response
@@ -44,7 +44,7 @@ class HttpResponse {
      * @param int $status_code The http status code of response
      * @param array $headers HTTP headers for response
      */
-    public function __construct(string $content = '', int $status_code = 200, array $headers = []) {
+    public function __construct(string $content = '', int $status_code = HttpStatus::HTTP_OK, array $headers = []) {
         $this->status_code = $status_code;
         $this->headers = [] !== $headers ? new HttpHeaders($headers) : new HttpHeaders;
         $stream = new Stream(fopen('php://memory', 'r+'));

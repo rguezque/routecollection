@@ -8,6 +8,8 @@
 
 namespace rguezque\RouteCollection;
 
+use rguezque\RouteCollection\Interfaces\MiddlewareInterface;
+
 /**
  * Represents a route
  * 
@@ -36,6 +38,13 @@ class Route {
      * @var callable
      */
     private $controller;
+
+    /**
+     * Middlewares array for route
+     * 
+     * @var MiddlewareInterface[]
+     */
+    private $middlewares = [];
 
     /**
      * Initialize a route
@@ -75,6 +84,25 @@ class Route {
      */
     public function getRouteController(): callable {
         return $this->controller;
+    }
+
+    /**
+     * Set middlewares to route
+     * 
+     * @param MiddlewaresInterface[]
+     * @return void
+     */
+    public function execBefore(MiddlewareInterface ...$middlewares): void {
+        $this->middlewares = $middlewares;
+    }
+
+    /**
+     * Return all the middlewares of route
+     * 
+     * @return MiddlewareInterface[]
+     */
+    public function getActionsBefore(): array {
+        return $this->middlewares;
     }
 }
 

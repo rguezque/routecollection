@@ -213,6 +213,8 @@ Un objeto ` ServerRequest` contiene información sobre la petición actual. Esta
 
 - `input`: Contiene los datos del stream `php://input` en on ubjeto `PhpInputStream`
 
+- `headers`: Contiene todos los encabezados HTTP de la actual petición
+
 Cada atributo es una instancia de `Collection` excepto `input` que contiene una instancia de `PhpInputStream`. La clase  `Collection` tiene los siguientes métodos:
 
 - `get(string $name, mixed $default = null)`: Devulve un parámetro por nombre o devuelve un valor default especificado si el parámetro no existe.
@@ -231,7 +233,6 @@ Para la clase `PhpInputStream` se tienen el método `PhpInputStream::getStream` 
 Los siguientes métodos también son parte de `ServerRequest`:
 
 - `withParams(array $params)`: Permite asignar los parámetros de una ruta a la actual petición.
-- `getRequestHeaders()`: Devuelve todos los encabezados HTTP de la actual petición.
 - `buildQuery(string $uri, array $params)`: Genera una cadena de petición del tipo `https://fake.com?name=John&lastname=Doe`.
 
 ### Respuesta (Response)
@@ -241,8 +242,6 @@ El objeto `HttpResponse` contiene los métodos y atributos necesarios para gener
 - `clear()`: Limpia los valores actuales de `Httpresponse`.
 - `setstatusCode(int $code)`: Asigna un código de estatus HTTP del response (Ver [HTTP Status Code](http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml)).
 - `getStatusCode()`: Devuelve el código HTTP actual del response.
-- `setContent(string $body)`: Asigna el contenido del response.
-- `getContent()`: Devuelve el actual cuerpo del response.
 
 Para definir el cuerpo del response se hace a través del atributo `body` que contiene una instancia de `Stream`con los métodos:
 
@@ -265,12 +264,12 @@ $stream = new Stream(fopen('php://memory'));
 
 Para definr *headers* se hace através del atributo `headers` que contiene una instancia de `HttpHeaders` con los siguientes métodos:
 
-- `setHeader(string $name, $value)`: Asigna un encabezado HTTP.
-- `getHeader(string $name)`: Devuelve el valor actual de un encabezado HTTP específico.
-- `hasHeader(string $name)`: Devuelve `true` si un encabezado existe.
-- `removeHeader(string $name)`: Elimina un encabezado HTTP del *response*.
-- `clearAllHeaders()`: Elimina todos los encabezados HTTP del *response*.
-- `getAllHeaders()`: Devuelve el array de los encabezados HTTP del *response*.
+- `set(string $name, $value)`: Asigna un encabezado HTTP.
+- `get(string $name)`: Devuelve el valor actual de un encabezado HTTP específico.
+- `has(string $name)`: Devuelve `true` si un encabezado existe.
+- `remove(string $name)`: Elimina un encabezado HTTP del *response*.
+- `clear()`: Elimina todos los encabezados HTTP del *response*.
+- `all()`: Devuelve el array de los encabezados HTTP del *response*.
 
 Como usar `HttpResponse`:
 
@@ -282,7 +281,7 @@ use rguezque\RouteCollection\{
 
 $response = new HttpResponse('Hello world'); // Escribe contenido inicial (opcional)
 $response->body->write(' Good morning!'); // Agrega contenido al cuerpo del response
-$response->headers->setHeader('Authorization', 'Bearer 932ie3849ea43ur7');
+$response->headers->set('Authorization', 'Bearer 932ie3849ea43ur7');
 
 SapiEmitter::emit($response); // Devuelve el response
 ```
@@ -291,7 +290,7 @@ Método abreviado para enviar un `HttpJsonResponse`, recibe un array y automatic
 
 ```php
 use rguezque\RouteCollection\{
-    HttpJsonResponse,
+    HttpJsonResponse,500
     SapiEmitter
 };
 

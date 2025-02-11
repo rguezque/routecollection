@@ -11,7 +11,8 @@ class SapiEmitter extends HttpResponse {
      */
     public static function emit(HttpResponse $response): void {
         // Set the status code
-        http_response_code($response->status_code);
+        //http_response_code($response->status_code);
+        (new HttpStatus($response->status_code))->sendHttpStatus();
 
         // Send the headers
         if(!headers_sent()) {

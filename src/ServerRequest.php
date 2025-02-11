@@ -22,49 +22,56 @@ class ServerRequest {
      * 
      * @var Collection
      */
-    public $query;
+    public readonly Collection $query;
 
     /**
      * $_POST params
      * 
      * @var Collection
      */
-    public $body;
+    public readonly Collection $body;
 
     /**
      * $_SERVER params
      * 
      * @var Collection
      */
-    public $server;
+    public readonly Collection $server;
 
     /**
      * $_COOKIE params
      * 
      * @var Collection
      */
-    public $cookie;
+    public readonly Collection $cookie;
 
     /**
      * $_FILES params
      * 
      * @var Collection
      */
-    public $files;
+    public readonly Collection $files;
 
     /**
      * Router params
      * 
      * @var Collection
      */
-    public $params;
+    public readonly Collection $params;
+
+    /**
+     * HTTP headers
+     * 
+     * @var Collection
+     */
+    public readonly Collection $headers;
     
     /**
      * PHP Input Stream (php://input)
      * 
      * @var PhpInputStream
      */
-    public $input;
+    public readonly PhpInputStream $input;
 
     public function __construct() {
         $this->query = new Collection($_GET);
@@ -74,29 +81,7 @@ class ServerRequest {
         $this->files = new Collection($_FILES);
         $this->params = new Collection;
         $this->input = new PhpInputStream;
-    }
-
-    /**
-     * Return an instance of ServerRequest with custom data for globals
-     * 
-     * @param array $query $_GET data
-     * @param array $body $_POST data
-     * @param array $server $_SERVER data
-     * @param array $cookie $_COOKIE data
-     * @param array $get $_FILES data
-     * @param array $get Router params
-     * @return ServerRequest
-     */
-    public static function withGlobals(array $query, array $body, array $server, array $cookie, array $files, array $params): ServerRequest {
-        $request = new ServerRequest;
-        $request->query = new Collection($query);
-        $request->body = new Collection($body);
-        $request->server = new Collection($server);
-        $request->cookie = new Collection($cookie);
-        $request->files = new Collection($files);
-        $request->params = new Collection($params);
-
-        return $request;
+        $this->headers = new Collection(getallheaders());
     }
 
     /**
@@ -107,16 +92,6 @@ class ServerRequest {
      */
     public function withParams(array $params): void {
         $this->params = new Collection($params);
-    }
-
-    /**
-     * Retrieve all HTTP headers from the current request
-     * 
-     * @return Collection
-     */
-    public function getRequestHeaders(): Collection {
-        $headers =  getallheaders();
-        return new Collection($headers);
     }
 
     /**

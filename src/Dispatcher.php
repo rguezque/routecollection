@@ -58,6 +58,7 @@ class Dispatcher {
      * @param CorsConfig $cors The CORS configuration to resolve
      */
     public function __construct(RouteCollection $route_collection, ?CorsConfig $cors = null) {
+        $route_collection->resolveGroups();
         $this->routes = $route_collection->getRoutes();
         if(null !== $cors) {
             $this->cors = $cors;
@@ -95,6 +96,7 @@ class Dispatcher {
                     'route_path' => $route->getRoutePath(),
                     'route_method' => $route->getRouteMethod(),
                     'route_controller' => $route->getRouteController(),
+                    'route_middlewares' => $route->getActionsBefore(),
                     'route_params' => $params
                 ];
             }
@@ -123,7 +125,21 @@ class Dispatcher {
             case Dispatcher::FOUND: 
                 $request = new ServerRequest;
                 $request->withParams($router_params['route_params']);
-                $result = call_user_func($router_params['route_controller'], $request);
+                
+                $next = function(ServerRequest $request) use($router_params) {
+                    return call_user_func($router_params['route_controller'], $request);
+                };
+
+                if([] !== $router_params['route_middlewares']) {
+                    foreach($router_params['route_middlewares'] as $middleware) {
+                        $next = function(ServerRequest $request) use($middleware, $next) {
+                            return $middleware->handle($request, $next);
+                        };
+                    }
+                }
+
+                $result = call_user_func($next, $request);
+
                 ob_get_clean();
                 
                 if(is_null($result) || !$result instanceof HttpResponse) {
@@ -152,7 +168,7 @@ class Dispatcher {
      */
     public static function halt(HttpResponse $response): void {
         SapiEmitter::emit($response);
-        exit();
+        exit(0);
     }
 
     /**

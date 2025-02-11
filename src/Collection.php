@@ -8,8 +8,6 @@
 
 namespace rguezque\RouteCollection;
 
-use JsonSerializable;
-
 /**
  * Represent a collection or parameters
  * 
@@ -20,14 +18,14 @@ use JsonSerializable;
  * @method void remove(string $name) Remove a param by name
  * @method void clear() Remove all params
  */
-class Collection implements JsonSerializable {
+class Collection {
 
     /**
      * Params collection
      * 
      * @var array
      */
-    private $data = [];
+    protected $data = [];
 
     /**
      * Initialize the params collection
@@ -98,15 +96,6 @@ class Collection implements JsonSerializable {
      */
     public function clear(): void {
         $this->data = [];
-    }
-
-    /**
-     * Specify data which should be serialized to JSON when the object is used in json_encode
-     * 
-     * @return array
-     */
-    public function jsonSerialize(): array {
-        return $this->data;
     }
 }
 

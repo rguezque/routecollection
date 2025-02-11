@@ -17,7 +17,7 @@ class HttpJsonResponse extends HttpResponse {
             $data = json_encode($data, JSON_PRETTY_PRINT);
         }
         parent::__construct($data, $status_code, $headers);
-        $this->headers->setHeader('Content-Type', 'application/json;charset=utf-8');
+        $this->headers->set('Content-Type', 'application/json;charset=utf-8');
     }
 }
 

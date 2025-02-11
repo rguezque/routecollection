@@ -19,81 +19,15 @@ namespace rguezque\RouteCollection;
  * @method array getAllHeaders() Get all HTTP headers
  * @method void sendHeaders() Send all HTTP headers
  */
-class HttpHeaders {
-    /**
-     * Headers collection
-     * 
-     * @var array
-     */
-    private $headers = [];
-
+class HttpHeaders extends Collection {
+    
     /**
      * Initialize the HTTP headers collection
      */
     public function __construct(array $headers = []) {
-        $this->headers = $headers;
+        parent::__construct($headers);
     }
 
-    /**
-     * Add or update an HTTP header
-     * 
-     * @param string $name Header name
-     * @param mixed $value Header value
-     * @return void
-     */
-    public function setHeader(string $name, $value): void {
-        $this->headers[$name] = $value;
-    }
-
-    /**
-     * Retrieve an HTTP header by name
-     * 
-     * @param string $name Header name
-     * @return mixed
-     */
-    public function getHeader(string $name): mixed {
-        return $this->headers[$name] ?? null;
-    }
-
-    /**
-     * Check if an HTTP header exists
-     * 
-     * @param string $name Header name
-     * @return bool
-     */
-    public function hasHeader(string $name): bool {
-        return isset($this->headers[$name]);
-    }
-
-    /**
-     * Remove an HTTP header
-     * 
-     * @param string $name Header name
-     * @return void
-     */
-    public function removeHeader(string $name): void {
-        if ($this->hasHeader($name)) {
-            unset($this->headers[$name]);
-        }
-    }
-
-    /**
-     * Remove all HTTP headers
-     * 
-     * @return void
-     */
-    public function clearAllHeaders(): void {
-        $this->headers = [];
-    }
-
-    /**
-     * Get all HTTP headers
-     * 
-     * @return array
-     */
-    public function getAllHeaders(): array {
-        return $this->headers;
-    }
 
     /**
      * Send all HTTP headers
@@ -101,7 +35,7 @@ class HttpHeaders {
      * @return void
      */
     public function sendHeaders(): void {
-        foreach ($this->headers as $name => $value) {
+        foreach ($this->data as $name => $value) {
             header("{$name}: {$value}");
         }
     }
