@@ -59,7 +59,7 @@ class Cors {
      * @param HttpResponse $response Response object to modify
      * @return bool Whether to continue processing the request
      */
-    public function handle(ServerRequest $request, HttpResponse $response): bool {
+    public function __invoke(ServerRequest $request, HttpResponse $response): bool {
         $origin = $request->server->get('HTTP_ORIGIN') ?? $request->headers->get('Origin');
         $request_method = $request->server->get('REQUEST_METHOD');
 

@@ -15,6 +15,8 @@
 - [Base de datos](#base-de-datos)
 - [Sesiones](#sesiones)
 - [Globales](#globales)
+- [Environment management](#environment-management)
+- [Implementación de Middleware](#implementación-de-middleware)
 
 ## Ejemplo
 
@@ -122,7 +124,7 @@ $router = new RouteCollection('/mi_router');
 
 ## Ejecutar el router
 
-Para ejecutar el router se debe crear una instancia de `Dispatcher` el cual recibe como argumento un objeto `RouteCollection` y opcionalmante un objeto `CorsConfig` (Ver [Configurar CORS](#configurar-cors)).
+Para ejecutar el router se debe crear una instancia de `Dispatcher` el cual recibe como argumento un objeto `RouteCollection` y opcionalmante un objeto `Cors` (Ver [Configurar CORS](#configurar-cors)).
 
 El método `Dispatcher::match` permite correr el router y recibe la URi de petición y el método HTTP de la petición. Buscará una ruta que corresponda o se empareje con la URI solicitada; si halla alguna coincidencia devolvera un *array* con los datos de la ruta.
 
@@ -134,7 +136,7 @@ El método `Dispatcher::match` permite correr el router y recibe la URi de petic
 
 Si  `Dispatcher::match` no encuentra ninguna ruta devolverá lo siguiente:
 
-- `status_code`: ConsendHeaders(): Envía los encabezados HTTP al cliente. valor `0` que significa que la ruta solicitada no fue hallada.
+- `status_code`: Con valor `0` que significa que la ruta solicitada no fue hallada.
 - `request_uri`: La URI solicitada.
 - `request_method`: El método de petición de la URI solicitada.
 
@@ -150,32 +152,34 @@ Para detener el router invoca el método `Dispatcher::halt` el cual recibe un ob
 
 ## Configurar CORS
 
-Configura CORS a través de `CorConfig`, el cual recibe un array con los origenes aceptados y sus opciones.
+Configura CORS a través del método `Cors::addOrigin`, el cual recibe un origen y dos argumentos opcionales; un *array* de métodos aceptados para dicho origen y otro array que contiene configuraciones adicionales.
 
 ```php
-$cors = new CorsConfig([
-    'http://localhost:3000' => [
-        'methods' => ['GET', 'PATCH'],
-        'headers' => ['Authorization']
-    ],
-    'http://foo.net' => [
-        'methods' => ['GET', 'POST'. 'DELETE'],
-        'headers' => ['Authorization', 'Accept']
+$cors = new Cors();
+$cors->addOrigin(
+    'http://localhost:3000', 
+    ['GET', 'PATCH'], 
+    [
+        'allowed_headers' => ['Content-Type', 'Authorization'],
+        'max_age' => 3600, // una hora
+        'supports_credentials' => true
     ]
-]);
+);
 ```
 
-Donde cada clave es la URL del origen; `methods` son los métodos de petición HTTP aceptados desde ese origen y `headers` son los encabezados aceptados desde ese origen.
-
-Alternativamente se pueden agragar origenes con `CorsConfig::addOrigin`.
+Si no se especifican los métodos, por default se aceptan todos; y si no se especifican configuraciones, por default se asigna la siguiente:
 
 ```php
-$cors->addOrigin('http://localhost:3000', ['GET', 'PATCH'], ['Authorization', 'Accept']);
+[
+    'allowed_headers' => ['Content-Type', 'Authorization'],
+    'max_age' => 86400, // 24 hours
+    'supports_credentials' => false
+]
 ```
 
-Si no se especifican los métodos y encabezados de un origen por default se asignaran los métodos `GET` y `POST` y los encabezados `Content-Type`, `Authorization` y `Accept`.
+No es necesario especificar las tres propiedades, las que no se definan se asignarán igualmente por default.
 
-Para implementarlo se envía como segundo argumento en `Dispatcher` (Ver [Ejecutar el router](#ejecutar-el-router)).
+Para implementar el CORS se envía el objeto `Cors` como segundo argumento en `Dispatcher` (Ver [Ejecutar el router](#ejecutar-el-router)).
 
 ```php
 $api = new RouteCollection;
@@ -353,18 +357,112 @@ La clase `Globals` permite manipular las variables de ` $GLOBALS` a través de s
 - `remove(string $name)`: Elimina una variable por nombre.
 - `clear()`: Elimina todas las variables.
 
-## Error Handler
+## Environment management
 
-La clase `ErrorHandler` permite manipular los errores de la aplicación y volcarlos en un registro `errors.log`. Dependiendo del ambiente de desarrollo mostrará el *trace string* del error o lo ocultará del usuario. El método `ErrorHandler::confiugure` recibe un array de opciones: 
-
-- `log_path`: Para definir el directorio donde se guardará el archivo `errors.log`. Automáticamente se intentará crear el directorio si no existe; en caso de fallar crealo manualmente y otorga permisos de escritura.
-- `timezone`: Define la zona horaria para la aplicación y el registro de errores. Debe ser un identificador válido dentro de los listados por la función PHP  `timezone_identifiers_list`. Si un identificador no es válido por default se asigna `UTC`.
-- `environment`: Define el ambiente de desarrollo para *desarrollo* (`developḿent`) o *producción* (`production`). Si no se define, por default se asigna `development`.
+La clase `Environment` provee de un manejo y registro de errores para la aplicación. 
 
 ```php
-ErrorHandler::configure([
-    'log_path' => __DIR__.'/logs',
-    'timezone' => 'America/Mexico_City',
-    'environment' => 'development'
-]);
+use App\Core\Environment;
+
+// Register error and exception handlers
+Environment::register();
+
+// Set log directory (php_errors.log will be automatically created)
+Environment::setLogPath('/path/to/custom/logs');
 ```
+
+El modo de ambiente de la aplicación se configura mediante la variable de entorno `APP_ENV` en el archivo `.env`. Los valores permitidos son `development` y `production`. Por default el modo de ambiente es `production`.
+
+Los otros métodos disponibles son:
+
+- `getMode()`: Devuelve el modo de ambiente actual
+- `setLogPath(string $path)`: Asigna el directorio de logs. Si no se especifica un directorio, un default se asigna.
+- `getLogPath()`: Devuelve el directorio de logs actual
+
+## Implementación de Middleware
+
+### Introducción a Middleware
+
+Los middleware son componentes que permiten interceptar y procesar solicitudes HTTP antes de que lleguen al controlador final. En este proyecto, los middleware se implementan utilizando la `MiddlewareInterface`.
+
+### Estructura de MiddlewareInterface
+
+La interfaz `MiddlewareInterface` define un método `handle()` con la siguiente firma:
+
+```php
+public function handle(ServerRequest $request, callable $next)
+```
+
+- `$request`: Objeto que representa la solicitud HTTP actual.
+- `$next`: Una función callable que permite pasar la solicitud al siguiente middleware o al controlador final.
+
+### Ejemplo de Implementación de Middleware
+
+```php
+<?php
+use rguezque\RouteCollection\Interfaces\MiddlewareInterface;
+use rguezque\RouteCollection\ServerRequest;
+
+class AuthMiddleware implements MiddlewareInterface {
+    public function handle(ServerRequest $request, callable $next) {
+        // Lógica de autenticación
+        if (!$this->isAuthenticated($request)) {
+            // Redirigir o lanzar una excepción si no está autenticado
+            return new RedirectResponse('/login');
+        }
+        
+        // Pasar al siguiente middleware o controlador (Esta linea es obligatoria)
+        return $next($request);
+    }
+    
+    private function isAuthenticated(ServerRequest $request): bool {
+        // Implementar lógica de autenticación
+        // Por ejemplo, verificar una sesión o token
+        return false; // Ejemplo de implementación
+    }
+}
+```
+
+### Registro de Middleware
+
+Para usar un middleware, debes registrarlo después de  definir una ruta o un grupo de rutas:
+
+```php
+$router->routeGroup('/foo', function(RouteCollection $route) {
+    $route->route('GET', '/', function() {
+        return 'Foo';
+    });
+
+    $route->route('GET', '/bar/{name}', function() {
+        return 'Bar';
+    });
+
+    $route->routeGroup('/control', function(RouteCollection $subruta) {
+        $subruta->route('GET', '/', function() {
+            return 'Superadmin control';
+        });
+
+        $subruta->route('GET', '/admin', function() {
+            return 'Admin control';
+        })->execBefore(new AuthMiddleware2());
+
+        $subruta->route('GET', '/user', function() {
+            return 'User control';
+        })->execBefore(new AuthMiddleware3());
+    });
+})->execBefore(new AuthMiddleware());
+```
+
+Si se definen middlewares en un grupo de rutas, estos se aplicarán a todas las rutas del grupo, a menos que alguna ruta dentro del grupo defina middlewares propios.
+
+### Consideraciones Importantes
+
+- Un middleware puede modificar la solicitud antes de pasarla al siguiente middleware.
+- Puedes encadenar múltiples middleware.
+- El último middleware o el controlador final debe devolver una respuesta.
+
+### Buenas Prácticas
+
+- Mantén los middleware enfocados y con una única responsabilidad.
+- Evita lógica de negocio compleja dentro de los middleware.
+- Utiliza middleware para tareas transversales como autenticación, logging, o validación.

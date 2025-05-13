@@ -8,10 +8,8 @@
 
 namespace rguezque\RouteCollection;
 
-use ErrorException;
 use rguezque\RouteCollection\Exceptions\InternalServerErrorException;
 use rguezque\RouteCollection\Exceptions\RouteNotFoundException;
-use RuntimeException;
 use UnexpectedValueException;
 
 /**
@@ -47,7 +45,7 @@ class Dispatcher {
     /**
      * CORS configuration
      * 
-     * @var CorsConfig
+     * @var Cors
      */
     private $cors;
 
@@ -55,9 +53,9 @@ class Dispatcher {
      * Initialize dispatcher
      * 
      * @param Routecollection $route_collection The routes collection
-     * @param CorsConfig $cors The CORS configuration to resolve
+     * @param Cors $cors The CORS configuration to resolve
      */
-    public function __construct(RouteCollection $route_collection, ?CorsConfig $cors = null) {
+    public function __construct(RouteCollection $route_collection, ?Cors $cors = null) {
         $route_collection->resolveGroups();
         $this->routes = $route_collection->getRoutes();
         if(null !== $cors) {
