@@ -9,6 +9,7 @@
 namespace rguezque\RouteCollection;
 
 use Closure;
+use InvalidArgumentException;
 use rguezque\RouteCollection\Interfaces\MiddlewareInterface;
 
 /**
@@ -122,12 +123,12 @@ class RouteCollection {
      * 
      * @param MiddlewareInterface[] $middlewares Array of middleware instances
      * @return self
-     * @throws \InvalidArgumentException If middleware is not valid
+     * @throws InvalidArgumentException If middleware is not valid
      */
     public function execBefore(MiddlewareInterface ...$middlewares): self {
         foreach ($middlewares as $middleware) {
             if (!($middleware instanceof MiddlewareInterface)) {
-                throw new \InvalidArgumentException('Middleware must implement MiddlewareInterface');
+                throw new InvalidArgumentException('Middleware must implement MiddlewareInterface');
             }
         }
         $this->middlewares = array_merge($this->middlewares, $middlewares);

@@ -8,6 +8,8 @@
 
 namespace rguezque\RouteCollection;
 
+use rguezque\RouteCollection\Interfaces\GlobalsCollectionInterface;
+
 /**
  * Manage the $GLOBALS parameters
  * 
@@ -18,7 +20,7 @@ namespace rguezque\RouteCollection;
  * @method void remove(string $name) Remove a global parameter
  * @method void clear() Remove all global params
  */
-class Globals {
+class Globals implements GlobalsCollectionInterface {
     /**
      * Disable constructor
      */

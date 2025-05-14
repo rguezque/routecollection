@@ -8,6 +8,8 @@
 
 namespace rguezque\RouteCollection;
 
+use rguezque\RouteCollection\Interfaces\CollectionInterface;
+
 /**
  * Represent a collection or parameters
  * 
@@ -18,7 +20,7 @@ namespace rguezque\RouteCollection;
  * @method void remove(string $name) Remove a param by name
  * @method void clear() Remove all params
  */
-class Collection {
+class Collection implements CollectionInterface {
 
     /**
      * Params collection
